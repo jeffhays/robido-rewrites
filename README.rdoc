@@ -24,7 +24,7 @@ A simple web application that allows users to upload a PCAP file and visualize t
 == Getting Started
 
 1. Clone the repository:
-    git@github.com:jphase/Ruby-PCAP-Bubble-Chart.git
+    git clone git@github.com:jphase/Ruby-PCAP-Bubble-Chart.git
 
 2. Change directory to Ruby-PCAP-Bubble-Chart
     cd Ruby-PCAP-Bubble-Chart
