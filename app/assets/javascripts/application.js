@@ -213,16 +213,23 @@ function visualize(file = false) {
     init: function() {
       this.on('addedfile', function(file) {
         console.log('adding file ' + file);
+        // show loading icon while we wait for the ajax response
+        $('.fa-cloud-upload').hide();
+        $('#uploadform .loader').fadeIn('slow');
       }),
       this.on('success', function(file, response) {
           console.log(response);
+          if (response.file) {
+            window.location.href = '/?file=' + response.file;
+          }
           // animate out loading icon and animate in response message
           // load d3js visualization from file in ajax response
       })
     },
     drop: function() {
-      $('<')
       $('.fa-cloud-upload').hide();
+      $('#uploadform .loader').fadeIn('slow');
+
       console.log('drop');
     }
   }).on('drop', function(e) {

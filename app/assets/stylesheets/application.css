@@ -125,6 +125,23 @@ h1, h2, h3, h4, h5, h6 {
   margin-left: -50px;
 }
 
+/* loading icon */
+.loader {
+  color: rgba(0,0,0,.6);
+  font-size: 90px;
+  text-indent: -9999em;
+  overflow: hidden;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  margin: 72px auto;
+  position: relative;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-animation: load6 1.7s infinite ease;
+  animation: load6 1.7s infinite ease;
+}
 /* upload form */
 #uploadform {
   background: url('gridnoise.png');
@@ -141,7 +158,14 @@ h1, h2, h3, h4, h5, h6 {
 #uploadform .fa {
   margin-top: 110px;
 }
-
+#uploadform .loader {
+  display: none;
+  top: 50%;
+  left: 50%;
+  margin: -65px -65px;
+  position: absolute;
+}
+.dz-success-mark, .dz-error-mark { display: none; }
 /* utility classes */
 .clear {
   clear: both;
@@ -228,23 +252,6 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-/* Loading */
-.loader {
-  color: rgba(0,0,0,.6);
-  font-size: 90px;
-  text-indent: -9999em;
-  overflow: hidden;
-  width: 1em;
-  height: 1em;
-  border-radius: 50%;
-  margin: 72px auto;
-  position: relative;
-  -webkit-transform: translateZ(0);
-  -ms-transform: translateZ(0);
-  transform: translateZ(0);
-  -webkit-animation: load6 1.7s infinite ease;
-  animation: load6 1.7s infinite ease;
-}
 @-webkit-keyframes load6 {
   0% {
     -webkit-transform: rotate(0deg);
