@@ -5,7 +5,6 @@ class UploadController < ApplicationController
     unless params[:file].nil?
       # initialize
       file = sanitize_filename(params[:file].original_filename)
-      @filename = file
       # check if this is a pcap file
       if File.extname(file) == ".pcap"
         # check to see if the uploads directory exist, otherwise create it
