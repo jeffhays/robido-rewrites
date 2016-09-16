@@ -35,15 +35,13 @@ A simple web application that allows users to upload a PCAP file and visualize t
 4. Copy the config/initializers/secret_token.rb.example file to config/intializers/secret_token.rb and edit the contents:
     mv config/initializers/secret_token.rb.example config/initializers/secret_token.rb
 
-5. Edit the secret_token.rb file and place your newly generated secret token in there
+5. Edit line 7 of the secret_token.rb file from step 4 above and paste in the output of the following command:
     rake secret
 
-6. Copy the output of the above command and place it on line 7 of config/initializers/secret_token.rb accordingly
-
-7. Save your changes, navigate to your app's document root, and start the rails server
+6. Save your changes, change directories to your app's document root, and start the rails server
     rails server
 
-8. Browse to http://localhost:3000 and upload a PCAP file!
+7. Browse to http://localhost:3000 and upload a PCAP file!
 
 
 == Description of Contents
