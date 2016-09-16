@@ -20,8 +20,6 @@
 $(function() {
   $(document).foundation();
   visualize();
-  // var uploadTop = window.innerHeight - $('#uploadform').offset().top;
-  // console.log(window.innerHeight);
 });
 
 $(window).scroll(function() {
