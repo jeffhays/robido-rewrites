@@ -29,21 +29,21 @@ A simple web application that allows users to upload a PCAP file and visualize t
 2. Change directory to Ruby-PCAP-Bubble-Chart
     cd Ruby-PCAP-Bubble-Chart
 
-3. Copy the config/initializers/secret_token.rb.example file to config/intializers/secret_token.rb and edit the contents:
+3. Use bundle install to install depencies
+    bundle install
+
+4. Copy the config/initializers/secret_token.rb.example file to config/intializers/secret_token.rb and edit the contents:
     mv config/initializers/secret_token.rb.example config/initializers/secret_token.rb
 
-4. Edit the secret_token.rb file and place your newly generated secret token in there
+5. Edit the secret_token.rb file and place your newly generated secret token in there
     rake secret
 
-5. Copy the output of the above command and place it on line 7 of config/initializers/secret_token.rb
+6. Copy the output of the above command and place it on line 7 of config/initializers/secret_token.rb accordingly
 
-5. Save your changes, navigate to your app's document root, and start the rails server
+7. Save your changes, navigate to your app's document root, and start the rails server
     rails server
 
-6. Browse to http://localhost:3000 and upload a PCAP file!
-
-* The Getting Started Guide: http://guides.rubyonrails.org/getting_started.html
-* Ruby on Rails Tutorial Book: http://www.railstutorial.org/
+8. Browse to http://localhost:3000 and upload a PCAP file!
 
 
 == Description of Contents
