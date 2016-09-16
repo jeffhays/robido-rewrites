@@ -18,8 +18,18 @@
 //= require_tree .
 
 $(function() {
-  // initialize
+  // initialize foundation and d3js visualization
   $(document).foundation();
+  visualize();
+});
+
+$(window).scroll(function() {
+  animateRows();
+});
+
+// display d3js visualization
+function visualize() {
+  // initialize
   var chart = "#chart";
   var table = "#chart-data";
   var chartColors = ["#058DC7", "#50B432", "#ED561B", "#DDDF00", "#666666", "#24CBE5", "#64E572", "#FF9655", "#FFF263", "#6AF9C4", "#00AA88", "#434348", "#90ed7d", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#8085e8", "#8d4653", "#91e8e1"];
@@ -56,15 +66,7 @@ $(function() {
         // tooltip
         var tooltip = d3.select("body")
             .append("div")
-            .style("position", "absolute")
-            .style("z-index", "10")
-            .style("visibility", "hidden")
-            .style("color", "white")
-            .style("padding", "8px")
-            .style("margin", "0 65px 0 0")
-            .style("background-color", "rgba(0, 0, 0, .75)")
-            .style("border-radius", "3px")
-            .style("font", "12px sans-serif")
+            .attr("id", "d3tip")
             .text("tooltip");
 
         // svg
@@ -76,6 +78,7 @@ $(function() {
               var circle = xCircle(d3.event.pageX, data, width, height, margins);
               // use the xCircle value above to 
               var host = $("#node-" + circle + " host").text();
+              host = host.indexOf(",") ? host.split(",").join("<br>") : host;
               var avg = parseFloat($("#node-" + circle + " average").text());
               var totalSize = parseInt($("#node-" + circle + " totalsize").text());
               var maxAvg = parseInt($("#node-" + circle + " maxaverage").text());
@@ -93,8 +96,8 @@ $(function() {
                 // loop through bubbles and queue tooltip based on current mouse x position
                 d3.select(".node").each(function(d) {
                   // display and style the tooltip
-                  tooltip.html('<table id="d3tip"><tbody><tr><td style="text-align:right;padding-right:8px;"><div class="circle"></div>Host:</td><td>' + host + '</td></tr><tr><td style="text-align:right;padding-right:8px;"><nobr>Packet Count:</nobr></td><td>' + packetCount + '</td></tr><tr><td style="text-align:right;padding-right:8px;"><nobr>Average Size:</nobr></td><td>' + avg.toFixed(2) + '</td></tr></tbody></table><div class="button expanded" data-circle="' + circle + '">View Packets</div></div><div id="d3line"></div>');
-                  $("#d3tip .circle").css("background", color);
+                  tooltip.html('<table><tbody><tr><td style="text-align:right;padding-right:8px;"><div class="circle"></div>Host:</td><td>' + host + '</td></tr><tr><td style="text-align:right;padding-right:8px;"><nobr>Packet Count:</nobr></td><td>' + packetCount + '</td></tr><tr><td style="text-align:right;padding-right:8px;"><nobr>Average Size:</nobr></td><td>' + avg.toFixed(2) + '</td></tr></tbody></table><div class="button expanded" data-circle="' + circle + '">View Packets</div></div><div id="d3line"></div>');
+                  $("#d3tip table .circle").css("background", color);
                   tooltip.style({background: "rgba(0,0,0,.7)", visibility: "visible"});
                 });
 
@@ -109,7 +112,6 @@ $(function() {
                   var circle = $(this).data("circle");
                   showTable(table, data, packets);
                 });
-
                 return tooltip.style("top", y + "px").style("left", (d3.event.pageX - 110) + "px");
               }
               return tooltip.style("visibility", "hidden");
@@ -200,8 +202,20 @@ $(function() {
     headers: {
       "X-CSRFToken": $('meta[name="csrf-token"]').attr("content")
     },
+    params: {
+        _token: $('meta[name="csrf-token"]').attr("content")
+    },
     init: function() {
-      this.on("error", function(file, message) { alert(message); });
+      this.on("addedfile", function(file) {
+        console.log("adding file " + file);
+      }),
+      this.on("success", function(file, response) {
+          console.log(response);
+      })
+      console.log('init dropzone');
+    },
+    drop: function() {
+      console.log('drop');
     }
   }).on("drop", function(e) {
     processFiles(e);
@@ -210,15 +224,6 @@ $(function() {
   $("#uploadform .fa").on("click", function() {
     $(this).parent().trigger("click");
   });
-});
-
-$(window).scroll(function() {
-  animateRows();
-});
-
-// process files
-function processFiles(event) {
-  console.log(event);
 }
 
 // animate the table rows in to add fanciness :)
@@ -227,7 +232,6 @@ function animateRows() {
   var animateRows = 25;
   $("#chart-data tbody tr:not(.animated)").each(function() {
     if (document.body.scrollTop + window.innerHeight >= $(this).offset().top) {
-      console.log('animating in row #' + $(this).index());
       if ($("#chart-data tbody tr").length) {
         if ($(this).index() > animateRows) {
           $(this).addClass("animated");
@@ -242,7 +246,6 @@ function animateRows() {
 // dynamically create table of packet data
 function showTable(table, data, packets = false) {
   var dataset = $(table).data("host");
-  // console.log( "dataset", dataset );
   if (typeof dataset == "undefined" || dataset != data.host) {
     if (packets) {
       data.packets = packets;

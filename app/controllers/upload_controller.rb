@@ -1,10 +1,10 @@
 class UploadController < ApplicationController
   @@uploads = Rails.public_path + "/uploads/"
   def create
-    redirect = "/"
-    unless params[:upload].nil?
+    file = false
+    unless params[:file].nil?
       # initialize
-      name = sanitize_filename(params[:upload][:file].original_filename)
+      file = sanitize_filename(params[:file].original_filename)
 
       # check to see if the uploads directory exist, otherwise create it
       unless File.directory?(@@uploads)
@@ -12,15 +12,13 @@ class UploadController < ApplicationController
       end
 
       # upload the file
-      path = File.join(@@uploads, name)
+      path = File.join(@@uploads, file)
       unless File.exists?(path)
-        File.open(path, "wb") {|f| f.write(params[:upload][:file].read)}
+        File.open(path, "wb") {|f| f.write(params[:file].read)}
       end
-
-      # redirect them to the index page and display their file
-      redirect = "/?file=" + name
     end
-    redirect_to URI.encode(redirect)
+    message = file ? "Uploadeded successful" : "There was a problem uploading your file"
+    render json: {params: params, file: file, message: message} and return
   end
 
   def index
@@ -126,7 +124,7 @@ class UploadController < ApplicationController
         bounds = {min: average - (packets.length / 2), max: average + (packets.length / 2)}
 
         # push formatted packet hash
-        new_packets.push({id: index, host: host, bounds: bounds, total_packet_size: total_packet_size, max: largest_total_packets, average: average, packets: packets})
+        new_packets.push({id: index, host: host, host_ips: host_ips, host_names: host_names, bounds: bounds, total_packet_size: total_packet_size, max: largest_total_packets, average: average, packets: packets})
         index += 1
       end
       host_packets = new_packets.sort_by {|p| p[:packets].length}.reverse

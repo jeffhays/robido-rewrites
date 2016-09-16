@@ -69,18 +69,30 @@ h1, h2, h3, h4, h5, h6 {
   -webkit-animation: breathingslow 1s ease-in-out infinite normal;
   animation: breathingslow 1s ease-in-out infinite normal;
 }
+#d3tip {
+  position: absolute;
+  z-index: 10;
+  visibility: hidden;
+  color: white;
+  padding: 8px;
+  margin: 0 65px 0 0;
+  background-color: rgba(0, 0, 0, .75);
+  border-radius: 3px;
+  font: 12px sans-serif;
+}
 #d3tip tbody, #d3tip tr:nth-child(even) {
   background: transparent;
   padding: .2 0;
   border: none;
 }
-#d3tip {
+#d3tip table {
   margin: 0;
   padding: 0;
   color: white;
   position: relative;
   text-shadow: 2px 2px black;
 }
+
 .button.expanded {
   margin: 5px 0 0;
 }
@@ -88,8 +100,8 @@ h1, h2, h3, h4, h5, h6 {
   width: 1px;
   clear: both;
   left: 110px;
-  height: 83px;
-  bottom: -83px;
+  height: 84px;
+  bottom: -84px;
   cursor: pointer;
   position: absolute;
   background: rgba(0, 0, 0, .75);
