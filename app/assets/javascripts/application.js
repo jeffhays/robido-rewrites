@@ -21,8 +21,7 @@ $(function() {
   $(document).foundation();
   visualize();
   // var uploadTop = window.innerHeight - $('#uploadform').offset().top;
-
-  console.log(window.innerHeight);
+  // console.log(window.innerHeight);
 });
 
 $(window).scroll(function() {
@@ -221,9 +220,12 @@ function visualize(file = false) {
           console.log(response);
           if (response.file) {
             window.location.href = '/?file=' + response.file;
+          } else {
+            // animate out loading icon and animate in response message
+            $('#uploadform .loader').hide();
+            alert('There was an error processing your file. Please try again later.');
+            $('.fa-cloud-upload').fadIn('slow');
           }
-          // animate out loading icon and animate in response message
-          // load d3js visualization from file in ajax response
       })
     },
     drop: function() {
