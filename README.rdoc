@@ -32,10 +32,10 @@ A simple web application that allows users to upload a PCAP file and visualize t
 3. Use bundle install to install depencies
     bundle install
 
-4. Copy the config/initializers/secret_token.rb.example file to config/intializers/secret_token.rb and edit the contents:
+4. Rename the config/initializers/secret_token.rb.example file to config/intializers/secret_token.rb and edit the contents:
     mv config/initializers/secret_token.rb.example config/initializers/secret_token.rb
 
-5. Edit line 7 of the secret_token.rb file from step 4 above and paste in the output of the following command:
+5. Edit line 7 of the secret_token.rb file from step 4 above and paste in the output of the following command accordingly:
     rake secret
 
 6. Save your changes, change directories to your app's document root, and start the rails server
