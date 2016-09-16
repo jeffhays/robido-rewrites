@@ -1,0 +1,9 @@
+development: &defaults
+  host: "localhost:3000"
+
+production:
+  <<: *defaults
+  host: "pcap.robido.com"
+
+test:
+  <<: *defaults

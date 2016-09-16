@@ -7,8 +7,8 @@ A simple web application that allows users to upload a PCAP file and visualize t
 
 1. Create a simple web app that will take an uploaded PCAP, extract statistics from it, and then create a simple bubble chart with table off the data.
 2. From the PCAP, extract the following with tshark and ruby:
-      - All Hosts from the Host Field in the HTTP conversations (there should be 19 unique domains and 3 IP addresses)
-      - For each unique host, collect the associated packets and build the following statistics
+      • All Hosts from the Host Field in the HTTP conversations (there should be 19 unique domains and 3 IP addresses)
+      • For each unique host, collect the associated packets and build the following statistics:
           • Average packet size
           • Total packet count for conversations involving that host
 3. Present the user with a bubble chart using d3.js that has a bubble for each host, the average packet size along the x-axis, and the size of the bubble is set by the total packet count. When the user clicks a bubble it should display the associated packets in a table below the chart.
