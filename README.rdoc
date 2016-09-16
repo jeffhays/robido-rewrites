@@ -7,10 +7,10 @@ A simple web application that allows users to upload a PCAP file and visualize t
 
 1. Create a simple web app that will take an uploaded PCAP, extract statistics from it, and then create a simple bubble chart with table off the data.
 2. From the PCAP, extract the following with tshark and ruby:
-      • All Hosts from the Host Field in the HTTP conversations (there should be 19 unique domains and 3 IP addresses)
-      • For each unique host, collect the associated packets and build the following statistics:
-          • Average packet size
-          • Total packet count for conversations involving that host
+     • All Hosts from the Host Field in the HTTP conversations (there should be 19 unique domains and 3 IP addresses)
+     • For each unique host, collect the associated packets and build the following statistics:
+        • Average packet size
+        • Total packet count for conversations involving that host
 3. Present the user with a bubble chart using d3.js that has a bubble for each host, the average packet size along the x-axis, and the size of the bubble is set by the total packet count. When the user clicks a bubble it should display the associated packets in a table below the chart.
 
 
@@ -23,17 +23,23 @@ A simple web application that allows users to upload a PCAP file and visualize t
 
 == Getting Started
 
-1. At the command prompt, create a new Rails application:
-       <tt>rails new myapp</tt> (where <tt>myapp</tt> is the application name)
+1. Clone the repository:
+    git@github.com:jphase/Ruby-PCAP-Bubble-Chart.git
 
-2. Change directory to <tt>myapp</tt> and start the web server:
-       <tt>cd myapp; rails server</tt> (run with --help for options)
+2. Change directory to Ruby-PCAP-Bubble-Chart
+    cd Ruby-PCAP-Bubble-Chart
 
-3. Go to http://localhost:3000/ and you'll see:
-       "Welcome aboard: You're riding Ruby on Rails!"
+3. Copy the config/initializers/secret_token.rb.example file to config/intializers/secret_token.rb and edit the contents:
+    mv config/initializers/secret_token.rb.example config/initializers/secret_token.rb
 
-4. Follow the guidelines to start developing your application. You can find
-the following resources handy:
+4. Edit the secret_token.rb file and place your newly generated secret token in there
+    rake secret
+    (copy the output of the above command and place it on line 7 of config/initializers/secret_token.rb)
+
+5. Save your changes, navigate to your app's document root, and start the rails server
+    rails server
+
+6. Browse to http://localhost:3000 and upload a PCAP file!
 
 * The Getting Started Guide: http://guides.rubyonrails.org/getting_started.html
 * Ruby on Rails Tutorial Book: http://www.railstutorial.org/
