@@ -214,7 +214,7 @@ function visualize(file = false) {
         console.log('adding file ' + file);
         // show loading icon while we wait for the ajax response
         $('.fa-cloud-upload').hide();
-        $('#uploadform .loader').fadeIn('slow');
+        $('#uploadform .loader').show();
       }),
       this.on('success', function(file, response) {
           console.log(response);
@@ -222,9 +222,9 @@ function visualize(file = false) {
             window.location.href = '/?file=' + response.file;
           } else {
             // animate out loading icon and animate in response message
-            $('#uploadform .loader').hide();
-            alert('There was an error processing your file. Please try again later.');
-            $('.fa-cloud-upload').fadIn('slow');
+            alert(response.message);
+            $('.loader, .dz-preview').hide();
+            $('.fa-cloud-upload').fadeIn('slow');
           }
       })
     },

@@ -5,19 +5,24 @@ class UploadController < ApplicationController
     unless params[:file].nil?
       # initialize
       file = sanitize_filename(params[:file].original_filename)
-
-      # check to see if the uploads directory exist, otherwise create it
-      unless File.directory?(@@uploads)
-        Dir.mkdir @@uploads
-      end
-
-      # upload the file
-      path = File.join(@@uploads, file)
-      unless File.exists?(path)
-        File.open(path, "wb") {|f| f.write(params[:file].read)}
+      # check if this is a pcap file
+      if File.extname(file) == ".pcap"
+        # check to see if the uploads directory exist, otherwise create it
+        unless File.directory?(@@uploads)
+          Dir.mkdir @@uploads
+        end
+        # upload the file
+        path = File.join(@@uploads, file)
+        unless File.exists?(path)
+          File.open(path, "wb") {|f| f.write(params[:file].read)}
+        end
+        message = "Uploadeded successful! One moment while we load the PCAP file..."
+      else
+        file = false
+        message = "The file you uploaded was not a PCAP file.\n\nPlease make sure you are uploading a file with the .pcap extension and try again."
       end
     end
-    message = file ? "Uploadeded successful" : "There was a problem uploading your file"
+    message = message ? message : "There was a problem uploading your file"
     render json: {params: params, file: file, message: message} and return
   end
 
