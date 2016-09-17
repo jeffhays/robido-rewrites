@@ -47,7 +47,7 @@ function visualize(file = false) {
       if (hasData) {
 
         // create bubble chart when data is present
-        var margins = { top: 55, right: 390, bottom: 55, left: 140 },
+        var margins = { top: 55, right: 200, bottom: 55, left: 140 },
             width = window.innerWidth,
             height = window.innerHeight - 40,
             format = d3.format(',d'),
@@ -312,12 +312,14 @@ function bubbleData(index) {
 // position host bubbles on the x-axis
 function xPosition(data, width, margins) {
   // set x position of node that holds each host bubble
+  var circleX = data.average;
   var circleX = (data.average * (width / parseFloat(data.max)));
   if (data.average > (width / 2)) {
     var xOffset = margins.right * -1;
   } else {
     var xOffset = margins.left;
   }
+  return circleX;
   return Math.abs(circleX + xOffset);
 }
 
@@ -328,12 +330,14 @@ function xCircle(x, data, width, height, margins) {
     data.forEach(function(host, index, array) {
       // calculate x position and left and right bounds of bubble
       var circleX = (host.average * (width / parseFloat(host.max)));
+      // var circleX = host.average;
       // calculate x offset
       if (host.average > (width / 2)) {
         var xOffset = margins.right * -1;
       } else {
         var xOffset = margins.left;
       }
+      xOffset = 0;
       // calculate new host bubble diameter based on chart size
       var margin = margins.top + margins.bottom;
       var circleDiameter = (host.packets.length * ((height - margin) / parseFloat(host.max)));
