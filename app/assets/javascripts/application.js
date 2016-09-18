@@ -304,16 +304,20 @@ function xPosition(data, width, margins) {
   return x + offset;
 }
 
+// get diameter of host bubble
+function diameter(host, height, margins) {
+  var margin = margins.top + margins.bottom;
+  return host.packets.length * ((height - margin) / parseFloat(host.max));
+}
+
 // trigger tooltip on host bubble by current mouse x value
 function xCircle(x, data, width, height, margins) {
   if (data.length) {
     var xIn = [];
     data.forEach(function(host, index, array) {
-      // calculate x position and left and right bounds of bubble
+      // x position and diameter of host
       var circleX = xPosition(host, width, margins);
-      // calculate new host bubble diameter based on chart size
-      var margin = margins.top + margins.bottom;
-      var circleDiameter = (host.packets.length * ((height - margin) / parseFloat(host.max)));
+      var circleDiameter = diameter(host, height, margins);
       // set left and right comparison values
       var left = circleX - circleDiameter / 2;
       var right = circleX + circleDiameter / 2;
