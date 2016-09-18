@@ -41,7 +41,7 @@ function visualize(file = false) {
       hasData = hasData ? hasData : !$.isEmptyObject(data);
       if (hasData) {
         // create bubble chart when data is present
-        var margins = { top: 55, right: 400, bottom: 55, left: 40 },
+        var margins = { top: 55, right: 300, bottom: 55, left: 100 },
             width = window.innerWidth,
             height = window.innerHeight - 40,
             format = d3.format(',d'),
@@ -299,7 +299,9 @@ function hostData(index) {
 // get x position of host bubble
 function hostX(data, width, margins) {
   var x = (data.average * (width / parseFloat(data.max)));
-  var offset = x > width / 2 ? margins.right * -1 : margins.left;
+  var marginRight = (margins.right * (width / parseFloat(data.max)));
+  var marginLeft = (margins.left * (width / parseFloat(data.max)));
+  var offset = x > width / 2 ? marginRight * -1 : marginLeft;
   offset = (offset * (width / parseFloat(data.max)))
   return x + offset;
 }
