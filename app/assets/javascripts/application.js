@@ -65,9 +65,8 @@ function visualize(file = false) {
         // svg
         var svg = d3.select(chart).append('svg')
             .on('mousemove', function() {
-              // queue tooltip over host bubble based on current mouse x position
+              // trigger tooltip over host bubble based on current mouse x position
               var y = height / 2 - 200;
-              // determine if we're on the x range of a host bubble in the front
               var circle = xCircle(d3.event.pageX, data, width, height, margins);
               // set all the totals, averages, etc.
               var avg = parseFloat($('#node-' + circle + ' average').text());
@@ -125,7 +124,7 @@ function visualize(file = false) {
             .attr('id', function(d) { return 'node-' + d.id; })
             .attr('transform', function(d) {
               // calculate x position based on data and chart dimensions
-              var x = xPosition(d, width, margins);
+              var x = hostX(d, width, margins);
               return 'translate(' + x  + ',' + (height / 2) + ')';
             });
 
@@ -195,10 +194,10 @@ function visualize(file = false) {
   $('#uploadform').dropzone({
     url: '/upload/create',
     headers: {
-      'X-CSRFToken': $('meta[name="csrf-token"]').attr("content")
+      'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
     },
     params: {
-        _token: $('meta[name="csrf-token"]').attr("content")
+        _token: $('meta[name="csrf-token"]').attr('content')
     },
     init: function() {
       this.on('addedfile', function(file) {
@@ -289,7 +288,7 @@ function showTable(table, data, packets = false) {
 }
 
 // get bubble data by index
-function bubbleData(index) {
+function hostData(index) {
   $('.node').each(function(index, value) {
     if (parseInt($(this).children('id').text()) == index) {
       return { id: $(this).children('x') };
@@ -298,27 +297,27 @@ function bubbleData(index) {
 }
 
 // get x position of host bubble
-function xPosition(data, width, margins) {
+function hostX(data, width, margins) {
   var x = (data.average * (width / parseFloat(data.max)));
   var offset = x > width / 2 ? margins.right * -1 : margins.left;
   return x + offset;
 }
 
 // get diameter of host bubble
-function diameter(host, height, margins) {
+function hostDiameter(host, height, margins) {
   var margin = margins.top + margins.bottom;
   return host.packets.length * ((height - margin) / parseFloat(host.max));
 }
 
-// trigger tooltip on host bubble by current mouse x value
+// get the front most circle based on current mouse x position
 function xCircle(x, data, width, height, margins) {
   if (data.length) {
     var xIn = [];
     data.forEach(function(host, index, array) {
       // x position and diameter of host
-      var circleX = xPosition(host, width, margins);
-      var circleDiameter = diameter(host, height, margins);
-      // set left and right comparison values
+      var circleX = hostX(host, width, margins);
+      var circleDiameter = hostDiameter(host, height, margins);
+      // left and right bounds of host
       var left = circleX - circleDiameter / 2;
       var right = circleX + circleDiameter / 2;
       // create array of bubbles within bounds of the current x position
