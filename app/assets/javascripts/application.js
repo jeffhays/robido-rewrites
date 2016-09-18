@@ -38,16 +38,10 @@ function visualize(file = false) {
   // draw chart if filename exists
   if (typeof file != 'undefined' && file.length) {
     d3.json('/upload/index.json?file=' + $(chart).data('file'), function(error, data) {
-      // debugging
-      console.log(error);
-      console.log(data);
       hasData = hasData ? hasData : !$.isEmptyObject(data);
-
-      // proceed if data isn't null
       if (hasData) {
-
         // create bubble chart when data is present
-        var margins = { top: 55, right: 200, bottom: 55, left: 140 },
+        var margins = { top: 55, right: 400, bottom: 55, left: 140 },
             width = window.innerWidth,
             height = window.innerHeight - 40,
             format = d3.format(',d'),
@@ -73,18 +67,18 @@ function visualize(file = false) {
             .on('mousemove', function() {
               // queue tooltip over host bubble based on current mouse x position
               var y = height / 2 - 200;
-              // cdetermine if we're on the x range of a host bubble in the front
+              // determine if we're on the x range of a host bubble in the front
               var circle = xCircle(d3.event.pageX, data, width, height, margins);
-              // use the xCircle value above to 
-              var host = $('#node-' + circle + ' host').text();
-              // just in case there are multiple ips that resolve to different hosts, this will be a list of data instead
-              host = host.indexOf(',') ? host.split(',')[0] : host;
               // set all the totals, averages, etc.
               var avg = parseFloat($('#node-' + circle + ' average').text());
               var totalSize = parseInt($('#node-' + circle + ' totalsize').text());
               var maxAvg = parseInt($('#node-' + circle + ' maxaverage').text());
               var color = $('#node-' + circle + ' circle').css('fill');
               var packets = $('#node-' + circle + ' packets').text();
+              var host = $('#node-' + circle + ' host').text();
+              // just in case there are multiple ips that resolve to different hosts, this will be a list of data instead
+              host = host.indexOf(',') ? host.split(',')[0] : host;
+
               var packetCount = 0;
               // grab the packets when they're available
               if (packets.length) {
@@ -93,6 +87,7 @@ function visualize(file = false) {
                   packetCount = packets.length;
                 }
               }
+
               // when we match a circle to the current mouse x position
               if (circle > -1) {
                 // loop through bubbles and queue tooltip based on current mouse x position
@@ -190,10 +185,8 @@ function visualize(file = false) {
         });
 
         d3.select(self.frameElement).style('height', width + 'px');
-      } else {
-        if (error) {
-          console.log('ERROR: ', error);
-        }
+      } else if (error) {
+        console.log('ERROR: ', error);
       }
     });
   }
@@ -215,26 +208,21 @@ function visualize(file = false) {
         $('#uploadform .loader').show();
       }),
       this.on('success', function(file, response) {
-          console.log(response);
-          if (response.file) {
-            window.location.href = '/?file=' + response.file;
-          } else {
-            // animate out loading icon and animate in response message
-            alert(response.message);
-            $('.loader, .dz-preview').hide();
-            $('.fa-cloud-upload').fadeIn('slow');
-          }
+        if (response.file) {
+          // reload the page and pass their file in the url
+          window.location.href = '/?file=' + response.file;
+        } else {
+          // animate out loading icon and animate in response message
+          alert(response.message);
+          $('.loader, .dz-preview').hide();
+          $('.fa-cloud-upload').fadeIn('slow');
+        }
       })
     },
     drop: function() {
       $('.fa-cloud-upload').hide();
       $('#uploadform .loader').fadeIn('slow');
-
-      console.log('drop');
     }
-  }).on('drop', function(e) {
-    // dropped file
-    console.log('dropped file');
   });
   // trigger upload form click event on icon click event
   $('#uploadform .fa').on('click', function() {
@@ -302,25 +290,18 @@ function showTable(table, data, packets = false) {
 
 // get bubble data by index
 function bubbleData(index) {
-  $(".node").each(function(index, value) {
-    if (parseInt($(this).children("id").text()) == index) {
+  $('.node').each(function(index, value) {
+    if (parseInt($(this).children('id').text()) == index) {
       return { id: $(this).children('x') };
     }
   });
 }
 
-// position host bubbles on the x-axis
+// get x position of host bubble
 function xPosition(data, width, margins) {
-  // set x position of node that holds each host bubble
-  var circleX = data.average;
-  var circleX = (data.average * (width / parseFloat(data.max)));
-  if (data.average > (width / 2)) {
-    var xOffset = margins.right * -1;
-  } else {
-    var xOffset = margins.left;
-  }
-  return circleX;
-  return Math.abs(circleX + xOffset);
+  var x = (data.average * (width / parseFloat(data.max)));
+  var offset = x > width / 2 ? margins.right * -1 : margins.left;
+  return x + offset;
 }
 
 // trigger tooltip on host bubble by current mouse x value
@@ -329,21 +310,13 @@ function xCircle(x, data, width, height, margins) {
     var xIn = [];
     data.forEach(function(host, index, array) {
       // calculate x position and left and right bounds of bubble
-      var circleX = (host.average * (width / parseFloat(host.max)));
-      // var circleX = host.average;
-      // calculate x offset
-      if (host.average > (width / 2)) {
-        var xOffset = margins.right * -1;
-      } else {
-        var xOffset = margins.left;
-      }
-      xOffset = 0;
+      var circleX = xPosition(host, width, margins);
       // calculate new host bubble diameter based on chart size
       var margin = margins.top + margins.bottom;
       var circleDiameter = (host.packets.length * ((height - margin) / parseFloat(host.max)));
       // set left and right comparison values
-      var left = (circleX + xOffset) - circleDiameter / 2;
-      var right = (circleX + xOffset) + circleDiameter / 2;
+      var left = circleX - circleDiameter / 2;
+      var right = circleX + circleDiameter / 2;
       // create array of bubbles within bounds of the current x position
       if (x < right && x > left) {
         xIn.push({id: host.id, index: index});
