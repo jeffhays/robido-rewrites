@@ -75,11 +75,12 @@ function visualize(file = false) {
               var color = $('#node-' + circle + ' circle').css('fill');
               var packets = $('#node-' + circle + ' packets').text();
               var host = $('#node-' + circle + ' host').text();
-              // just in case there are multiple ips that resolve to different hosts, this will be a list of data instead
+
+              // just in case there are multiple hosts that resolve to different ips, grab the first hostname
               host = host.indexOf(',') ? host.split(',')[0] : host;
 
+              // get the packet count
               var packetCount = 0;
-              // grab the packets when they're available
               if (packets.length) {
                 var packets = JSON.parse(packets);
                 if (packets.length) {

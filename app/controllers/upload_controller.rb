@@ -67,7 +67,7 @@ class UploadController < ApplicationController
         # create hashes by host key
         unless packet[map[:host]].nil?
           # aggregate host ips by host
-          if host_ips[packet[map[:dest]]].nil?
+          if host_ips[packet[map[:host]]].nil?
             host_ips[packet[map[:host]]] = [packet[map[:dest]]]
           else
             host_ips[packet[map[:host]]].push(packet[map[:dest]])
@@ -75,9 +75,9 @@ class UploadController < ApplicationController
 
           # aggregate host names by host
           if host_names[packet[map[:dest]]].nil?
-            host_names[packet[map[:host]]] = [packet[map[:dest]]]
+            host_names[packet[map[:dest]]] = [packet[map[:host]]]
           else
-            host_names[packet[map[:host]]].push(packet[map[:dest]])
+            host_names[packet[map[:dest]]].push(packet[map[:host]])
           end
         end
 
@@ -121,7 +121,7 @@ class UploadController < ApplicationController
         end
 
         # calculate data related to this host and setup a hash to deliver a nice data structure to the view
-        host = host_ips[host].nil? ? host : host_ips[host]
+        host = host_names[host].nil? ? host : host_names[host]
         total_packet_size = average.sum
         average = average.sum / average.length.to_f
 
