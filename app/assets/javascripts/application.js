@@ -41,7 +41,7 @@ function visualize(file = false) {
       hasData = hasData ? hasData : !$.isEmptyObject(data);
       if (hasData) {
         // create bubble chart when data is present
-        var margins = { top: 55, right: 600, bottom: 55, left: 0 },
+        var margins = { top: 55, right: 500, bottom: 55, left: 0 },
             width = window.innerWidth,
             height = window.innerHeight - 40,
             format = d3.format(',d'),
@@ -233,7 +233,7 @@ function visualize(file = false) {
 // animate the table rows in to add fanciness :)
 function animateRows() {
   // only animate the first few rows so it doesn't get annoying on larger data sets
-  var animateRows = 25;
+  var animateRows = Math.floor(window.innerHeight / 36) - 1;
   $('#chart-data tbody tr:not(.animated)').each(function() {
     if (document.body.scrollTop + window.innerHeight >= $(this).offset().top) {
       if ($('#chart-data tbody tr').length) {
