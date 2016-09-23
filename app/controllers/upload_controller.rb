@@ -3,7 +3,6 @@ class UploadController < ApplicationController
   def create
     file = false
     unless params[:file].nil?
-      # initialize
       file = sanitize_filename(params[:file].original_filename)
       # check if this is a pcap file
       if File.extname(file) == ".pcap"
@@ -31,7 +30,7 @@ class UploadController < ApplicationController
       # get packets from file
       @filename = sanitize_filename(params[:file])
       packets = get_packets(@@uploads + @filename)
-      packet_data = process_packets(packets)
+      packet_data = process_packets(packets) 
 
       # retrieve our packet data
       @host_packets = packet_data[:packets]
@@ -63,17 +62,11 @@ class UploadController < ApplicationController
 
     # process packets
     unless packets.nil?
+      # build list of host names
       packets.each do |packet|
         # create hashes by host key
         unless packet[map[:host]].nil?
-          # aggregate host ips by host
-          if host_ips[packet[map[:host]]].nil?
-            host_ips[packet[map[:host]]] = [packet[map[:dest]]]
-          else
-            host_ips[packet[map[:host]]].push(packet[map[:dest]])
-          end
-
-          # aggregate host names by host
+          # aggregate host names by destination ip
           if host_names[packet[map[:dest]]].nil?
             host_names[packet[map[:dest]]] = [packet[map[:host]]]
           else
@@ -83,13 +76,24 @@ class UploadController < ApplicationController
 
         # aggregate packet sizes
         average_packet_size.push(packet[map[:size]].to_i)
+      end
 
-        # aggregate packets by source ip
-        if host_packets[packet[map[:src]]].nil?
-          # packet[map[:src]]
-          host_packets[packet[map[:src]]] = [packet]
+      # clean up hostname list
+      host_names.each do |k,host|
+        host_names[k] = host.uniq
+      end
+
+      # aggregate packets by host
+      packets.each do |packet|
+        host = host_names[packet[map[:src]]].nil? ? host_names[packet[map[:dest]]] : host = host_names[packet[map[:src]]]
+        if host.nil?
+          host = host_names[packet[map[:dest]]]
+        end
+
+        if host_packets[host].nil?
+          host_packets[host] = [packet]
         else
-          host_packets[packet[map[:src]]].push(packet)
+          host_packets[host].push(packet)
         end
       end
 
@@ -103,11 +107,10 @@ class UploadController < ApplicationController
 
         # loop through packets for this host to get average packet size by host
         average = []
-        packets.each do |packet|
-          average.push(packet[map[:size]].to_i)
+        packets.each do |p|
+          average.push(p[map[:size]].to_i)
         end
-        average = average.sum / average.length.to_f
-        host_averages[host] = average
+        host_averages[host] = average.sum / average.length.to_f
       end
 
       # prepare a clean data object of host packets for the view
@@ -126,7 +129,7 @@ class UploadController < ApplicationController
         average = average.sum / average.length.to_f
 
         # aggregate coordinates of outer bounds of bubble by host
-        bounds = {min: average - (packets.length / 2), max: average + (packets.length / 2)}
+        bounds = {min: host_averages[host] - (packets.length / 2), max: host_averages[host] + (packets.length / 2)}
 
         # push formatted packet hash
         new_packets.push({id: index, host: host, host_ips: host_ips, host_names: host_names, bounds: bounds, total_packet_size: total_packet_size, max: largest_total_packets, average: average, packets: packets})
@@ -143,14 +146,14 @@ class UploadController < ApplicationController
     unless filename.nil?
       # only continue if our sanitized filename exists in the uploads directory
       if File.file?(filename)
-        # get the data we need from tshark while preventing tomfoolery
+        # get the data we need from tshark and prevent tomfoolery
         file = Shellwords.escape(filename)
         packets = `tshark -T fields -eframe.cap_len -eip.src -eip.dst -ehttp.host -r #{filename} -Y "not icmp and (tcp.flags.syn==1 or tcp.flags.ack==1 and tcp.flags.fin==0)"`.split("\n").reject {|e| e.to_s.empty?}
-        newpackets = []
+        new_packets = []
         packets.each do |p|
-          newpackets.push(p.split("\t"))
+          new_packets.push(p.split("\t"))
         end
-        packets = newpackets
+        packets = new_packets
       end
     end
     return packets

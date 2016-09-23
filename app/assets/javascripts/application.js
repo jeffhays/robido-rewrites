@@ -18,6 +18,7 @@
 //= require_tree .
 
 $(function() {
+  // initialize
   $(document).foundation();
   visualize();
 });
@@ -41,7 +42,7 @@ function visualize(file = false) {
       hasData = hasData ? hasData : !$.isEmptyObject(data);
       if (hasData) {
         // create bubble chart when data is present
-        var margins = { top: 55, right: 300, bottom: 55, left: 100 },
+        var margins = { top: 55, right: 250, bottom: 55, left: 250 },
             width = window.innerWidth,
             height = window.innerHeight - 40,
             format = d3.format(',d'),
@@ -78,6 +79,7 @@ function visualize(file = false) {
 
               // just in case there are multiple hosts that resolve to different ips, grab the first hostname
               host = host.indexOf(',') ? host.split(',')[0] : host;
+              host = host.length ? host : 'unknown';
 
               // get the packet count
               var packetCount = 0;
@@ -233,7 +235,9 @@ function visualize(file = false) {
 // animate the table rows in to add fanciness :)
 function animateRows() {
   // only animate the first few rows so it doesn't get annoying on larger data sets
-  var animateRows = 25;
+  var rows = Math.floor(window.innerHeight / 36) - 1;
+  var animateRows = rows;
+  // loop through our rows and apply our animation
   $('#chart-data tbody tr:not(.animated)').each(function() {
     if (document.body.scrollTop + window.innerHeight >= $(this).offset().top) {
       if ($('#chart-data tbody tr').length) {
@@ -303,7 +307,7 @@ function hostX(data, width, margins) {
   var marginRight = (margins.right * (width / parseFloat(data.max)));
   var marginLeft = (margins.left * (width / parseFloat(data.max)));
   var offset = x > width / 2 ? marginRight * -1 : marginLeft;
-  offset = (offset * (width / parseFloat(data.max)))
+  offset = (offset * (width / parseFloat(data.max)));
   return x + offset;
 }
 

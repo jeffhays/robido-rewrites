@@ -1,16 +1,13 @@
 <% unless @filename.nil? %>
 	<% unless @host_packets.empty? %>
 		<div id="loading" class="loader"></div>
+		<div id="chart-title"><span><%= @filename %></span></div>
 		<div id="chart" data-file="<%= params[:file] %>" data-largest-total-packets="<%= @largest_total_packets %>" data-packet-average="<%= @average_packet_size %>"></div>
 	<% end %>
 <% end %>
 
 <div class="row collapse">
 	<div class="small-12 columns">
-	<% unless @filename.nil? %>
-		<div id="chart-title"><span><%= @filename %></span></div>
-	<% end %>
-
 		<table id="chart-data"></table>
 
 		<div class="callout success text-center">

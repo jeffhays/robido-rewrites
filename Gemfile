@@ -26,6 +26,7 @@ gem 'foundation-rails'
 gem 'dropzonejs-rails'
 gem 'animate-rails'
 gem 'd3js-rails'
+gem 'jquery-tablesorter'
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
