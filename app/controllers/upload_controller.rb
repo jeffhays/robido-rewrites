@@ -113,6 +113,8 @@ class UploadController < ApplicationController
         host_averages[host] = average.sum / average.length.to_f
       end
 
+      max_average = host_averages.max_by{|k,v| v}
+
       # prepare a clean data object of host packets for the view
       index = 0
       new_packets = []
@@ -132,7 +134,7 @@ class UploadController < ApplicationController
         bounds = {min: host_averages[host] - (packets.length / 2), max: host_averages[host] + (packets.length / 2)}
 
         # push formatted packet hash
-        new_packets.push({id: index, host: host, host_ips: host_ips, host_names: host_names, bounds: bounds, total_packet_size: total_packet_size, max: largest_total_packets, average: average, packets: packets})
+        new_packets.push({id: index, host: host, host_ips: host_ips, host_names: host_names, bounds: bounds, total_packet_size: total_packet_size, max: largest_total_packets, max_average: max_average, average: average, packets: packets})
         index += 1
       end
       host_packets = new_packets.sort_by {|p| p[:packets].length}.reverse

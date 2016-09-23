@@ -18,7 +18,6 @@
 //= require_tree .
 
 $(function() {
-  // initialize
   $(document).foundation();
   visualize();
 });
@@ -42,7 +41,7 @@ function visualize(file = false) {
       hasData = hasData ? hasData : !$.isEmptyObject(data);
       if (hasData) {
         // create bubble chart when data is present
-        var margins = { top: 55, right: 250, bottom: 55, left: 250 },
+        var margins = { top: 55, right: 600, bottom: 55, left: 0 },
             width = window.innerWidth,
             height = window.innerHeight - 40,
             format = d3.format(',d'),
@@ -66,8 +65,9 @@ function visualize(file = false) {
         // svg
         var svg = d3.select(chart).append('svg')
             .on('mousemove', function() {
-              // trigger tooltip over host bubble based on current mouse x position
+              // queue tooltip over host bubble based on current mouse x position
               var y = height / 2 - 200;
+              // determine if we're on the x range of a host bubble in the front
               var circle = xCircle(d3.event.pageX, data, width, height, margins);
               // set all the totals, averages, etc.
               var avg = parseFloat($('#node-' + circle + ' average').text());
@@ -76,13 +76,11 @@ function visualize(file = false) {
               var color = $('#node-' + circle + ' circle').css('fill');
               var packets = $('#node-' + circle + ' packets').text();
               var host = $('#node-' + circle + ' host').text();
-
-              // just in case there are multiple hosts that resolve to different ips, grab the first hostname
+              // just in case there are multiple ips that resolve to different hosts, this will be a list of data instead
               host = host.indexOf(',') ? host.split(',')[0] : host;
-              host = host.length ? host : 'unknown';
 
-              // get the packet count
               var packetCount = 0;
+              // grab the packets when they're available
               if (packets.length) {
                 var packets = JSON.parse(packets);
                 if (packets.length) {
@@ -127,7 +125,7 @@ function visualize(file = false) {
             .attr('id', function(d) { return 'node-' + d.id; })
             .attr('transform', function(d) {
               // calculate x position based on data and chart dimensions
-              var x = hostX(d, width, margins);
+              var x = xPosition(d, width, margins);
               return 'translate(' + x  + ',' + (height / 2) + ')';
             });
 
@@ -179,7 +177,7 @@ function visualize(file = false) {
 
         // add x node to queue tooltip over bubble x position
         node.append('maxaverage')
-            .text(function(d) { return d.max; });
+            .text(function(d) { return d.max_average; });
 
         // build table data on click
         node.on('click', function(d) {
@@ -197,10 +195,10 @@ function visualize(file = false) {
   $('#uploadform').dropzone({
     url: '/upload/create',
     headers: {
-      'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+      'X-CSRFToken': $('meta[name="csrf-token"]').attr("content")
     },
     params: {
-        _token: $('meta[name="csrf-token"]').attr('content')
+        _token: $('meta[name="csrf-token"]').attr("content")
     },
     init: function() {
       this.on('addedfile', function(file) {
@@ -235,9 +233,7 @@ function visualize(file = false) {
 // animate the table rows in to add fanciness :)
 function animateRows() {
   // only animate the first few rows so it doesn't get annoying on larger data sets
-  var rows = Math.floor(window.innerHeight / 36) - 1;
-  var animateRows = rows;
-  // loop through our rows and apply our animation
+  var animateRows = 25;
   $('#chart-data tbody tr:not(.animated)').each(function() {
     if (document.body.scrollTop + window.innerHeight >= $(this).offset().top) {
       if ($('#chart-data tbody tr').length) {
@@ -293,7 +289,7 @@ function showTable(table, data, packets = false) {
 }
 
 // get bubble data by index
-function hostData(index) {
+function bubbleData(index) {
   $('.node').each(function(index, value) {
     if (parseInt($(this).children('id').text()) == index) {
       return { id: $(this).children('x') };
@@ -302,30 +298,23 @@ function hostData(index) {
 }
 
 // get x position of host bubble
-function hostX(data, width, margins) {
+function xPosition(data, width, margins) {
   var x = (data.average * (width / parseFloat(data.max)));
-  var marginRight = (margins.right * (width / parseFloat(data.max)));
-  var marginLeft = (margins.left * (width / parseFloat(data.max)));
-  var offset = x > width / 2 ? marginRight * -1 : marginLeft;
-  offset = (offset * (width / parseFloat(data.max)));
+  var offset = x > width / 2 ? margins.right * -1 : margins.left;
   return x + offset;
 }
 
-// get diameter of host bubble
-function hostDiameter(host, height, margins) {
-  var margin = margins.top + margins.bottom;
-  return host.packets.length * ((height - margin) / parseFloat(host.max));
-}
-
-// get the front most circle based on current mouse x position
+// trigger tooltip on host bubble by current mouse x value
 function xCircle(x, data, width, height, margins) {
   if (data.length) {
     var xIn = [];
     data.forEach(function(host, index, array) {
-      // x position and diameter of host
-      var circleX = hostX(host, width, margins);
-      var circleDiameter = hostDiameter(host, height, margins);
-      // left and right bounds of host
+      // calculate x position and left and right bounds of bubble
+      var circleX = xPosition(host, width, margins);
+      // calculate new host bubble diameter based on chart size
+      var margin = margins.top + margins.bottom;
+      var circleDiameter = (host.packets.length * ((height - margin) / parseFloat(host.max)));
+      // set left and right comparison values
       var left = circleX - circleDiameter / 2;
       var right = circleX + circleDiameter / 2;
       // create array of bubbles within bounds of the current x position
