@@ -101,6 +101,7 @@ class UploadController < ApplicationController
       average_packet_size = average_packet_size.sum / average_packet_size.length.to_f
 
       # get largest total packet counts
+      max_average = 0
       largest_total_packets = 0
       host_packets.each do |host,packets|
         largest_total_packets = packets.length > largest_total_packets ? packets.length : largest_total_packets
@@ -111,9 +112,8 @@ class UploadController < ApplicationController
           average.push(p[map[:size]].to_i)
         end
         host_averages[host] = average.sum / average.length.to_f
+        max_average = host_averages[host] > max_average ? host_averages[host] : max_average
       end
-
-      max_average = host_averages.max_by{|k,v| v}
 
       # prepare a clean data object of host packets for the view
       index = 0
