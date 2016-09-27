@@ -78,6 +78,7 @@ function visualize(file = false) {
               var host = $('#node-' + circle + ' host').text();
               // just in case there are multiple ips that resolve to different hosts, this will be a list of data instead
               host = host.indexOf(',') ? host.split(',')[0] : host;
+              host = host.length ? host : 'unknown';
 
               var packetCount = 0;
               // grab the packets when they're available
